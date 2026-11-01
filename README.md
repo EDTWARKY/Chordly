@@ -1,6 +1,7 @@
 # Chordly
 
 <p align="center">
+  <img src="public/logo.jpg" alt="Chordly Logo" width="160" style="border-radius: 24px;" /><br><br>
   <strong>A free, open-source desktop music player for YouTube Music, SoundCloud, and local files.</strong><br>
   Built with frosted glass & Material Design 3, no tracking, and no account needed.
 </p>
@@ -72,7 +73,12 @@ Chordly includes an integrated audio engineering toolkit accessible directly wit
 
 ---
 
+<a id="interface"></a>
 ## Material Design 3 Expressive UI
+
+<p align="center">
+  <img src="public/interface.png" alt="Chordly Interface" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);" />
+</p>
 
 Chordly implements the Material Design 3 (M3 Expressive) specification merged with Telegram-style frosted glass:
 
