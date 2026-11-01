@@ -3063,7 +3063,9 @@ async function createWindow() {
     frame: false,
     show: false,
     backgroundColor: "#050505",
-    icon: path.join(__dirname, "..", "build", "icon.ico"),
+    icon: fs.existsSync(path.join(__dirname, "icon.ico"))
+      ? path.join(__dirname, "icon.ico")
+      : path.join(__dirname, "..", "public", "icon.ico"),
     autoHideMenuBar: true,
     title: "Chordly",
     webPreferences: {
