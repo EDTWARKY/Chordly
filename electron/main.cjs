@@ -26,20 +26,13 @@ const partyServer = new PartyServer(39420);
 // Force V8 to garbage collect aggressively and limit heap size to 128MB
 app.commandLine.appendSwitch("js-flags", "--max-old-space-size=128 --expose-gc");
 
-// Disable heavy Chromium features we don't need for a music player
-app.commandLine.appendSwitch("disable-site-isolation-trials");
+// Disable heavy Chromium features we don't need for a music player while maintaining Google login compatibility
 app.commandLine.appendSwitch("disable-features", "HardwareMediaKeyHandling,MediaSessionService,BackForwardCache,Translate,WidgetLayering");
 app.commandLine.appendSwitch("disable-http-cache");
 app.commandLine.appendSwitch("disable-gpu-shader-disk-cache");
-app.commandLine.appendSwitch("enable-low-end-device-mode");
 
 // Throttle rendering when minimized/hidden
 app.commandLine.appendSwitch("limit-fps", "30");
-
-app.commandLine.appendSwitch("disable-background-networking");
-app.commandLine.appendSwitch("disable-component-update");
-app.commandLine.appendSwitch("disable-domain-reliability");
-app.commandLine.appendSwitch("disable-sync");
 app.commandLine.appendSwitch("disk-cache-size", String(32 * 1024 * 1024));
 app.commandLine.appendSwitch("media-cache-size", String(32 * 1024 * 1024));
 
@@ -729,21 +722,21 @@ async function openAuthWindow() {
   const partitionId = `persist:chordly_auth_${Date.now()}`;
   const authSession = session.fromPartition(partitionId);
 
-  // Derive native Chrome User Agent matching Chromium's exact version
-  const baseUa = authSession.getUserAgent() || app.userAgentFallback || "";
-  const cleanUa = baseUa
-    .replace(/Electron\/[0-9.]+\s*/gi, "")
-    .replace(/Chordly\/[0-9.]+\s*/gi, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  // Derive authentic Google Chrome User Agent matching Chromium's exact version
+  const chromeVer = process.versions.chrome || "134.0.0.0";
+  const chromeMajor = chromeVer.split(".")[0];
+  const cleanUa = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${chromeVer} Safari/537.36`;
 
   authSession.setUserAgent(cleanUa);
 
-  // Strip automation-detection headers
+  // Strip automation-detection headers and provide authentic Chrome client hints
   authSession.webRequest.onBeforeSendHeaders((details, callback) => {
     const requestHeaders = { ...details.requestHeaders };
     requestHeaders["User-Agent"] = cleanUa;
     delete requestHeaders["X-Requested-With"];
+    requestHeaders["sec-ch-ua"] = `"Chromium";v="${chromeMajor}", "Google Chrome";v="${chromeMajor}", "Not-A.Brand";v="24"`;
+    requestHeaders["sec-ch-ua-mobile"] = "?0";
+    requestHeaders["sec-ch-ua-platform"] = '"Windows"';
     callback({ cancel: false, requestHeaders });
   });
 
